@@ -18,7 +18,7 @@ sap.ui.define([
 	return BaseController.extend("sap.ui.demo.nav.controller.employee.overview.EmployeeOverviewContent", {
 
 		onInit: function () {
-            var oRouter = this.getRouter();
+			var oRouter = this.getRouter();
 
 			this._oTable = this.byId("employeesTable");
 			this._oVSD = null;
@@ -26,19 +26,20 @@ sap.ui.define([
 			this._bSortDescending = false;
 			this._aValidSortFields = ["EmployeeID", "FirstName", "LastName"];
 			this._sSearchQuery = null;
-            this._oRouterArgs = null;
+			this._oRouterArgs = null;
 
 			this._initViewSettingsDialog();
 
-            // make the search bookmarkable
+			// make the search bookmarkable
 			oRouter.getRoute("employeeOverview").attachMatched(this._onRouteMatched, this);
+
 		},
 
-        _onRouteMatched: function (oEvent) {
+		_onRouteMatched : function (oEvent) {
 			// save the current query state
 			this._oRouterArgs = oEvent.getParameter("arguments");
 			this._oRouterArgs["?query"] = this._oRouterArgs["?query"] || {};
-            var oQueryParameter = this._oRouterArgs["?query"];
+			var oQueryParameter = this._oRouterArgs["?query"];
 
 			// search/filter via URL hash
 			this._applySearchFilter(oQueryParameter.search);
@@ -46,40 +47,38 @@ sap.ui.define([
 			// sorting via URL hash
 			this._applySorter(oQueryParameter.sortField, oQueryParameter.sortDescending);
 
-            // show dialog via URL hash
+			// show dialog via url hash
 			if (oQueryParameter.showDialog) {
 				this._oVSD.open();
 			}
-	
 		},
 
-		onSortButtonPressed : function () {
+		onSortButtonPressed : function (oEvent) {
 			var oRouter = this.getRouter();
 			this._oRouterArgs["?query"].showDialog = 1;
-			oRouter.navTo("employeeOverview", this._oRouterArgs);
+			oRouter.navTo("employeeOverview",this._oRouterArgs);
 		},
 
 		onSearchEmployeesTable : function (oEvent) {
-            var oRouter = this.getRouter();
+			var oRouter = this.getRouter();
 			// update the hash with the current search term
 			this._oRouterArgs["?query"].search = oEvent.getSource().getValue();
-			oRouter.navTo("employeeOverview", this._oRouterArgs, true /*no history*/);
+			oRouter.navTo("employeeOverview",this._oRouterArgs, true /*no history*/);
 		},
 
 		_initViewSettingsDialog : function () {
-            var oRouter = this.getRouter();
+			var oRouter = this.getRouter();
 			this._oVSD = new ViewSettingsDialog("vsd", {
 				confirm: function (oEvent) {
 					var oSortItem = oEvent.getParameter("sortItem");
-                    this._oRouterArgs["?query"].sortField = oSortItem.getKey();
+					this._oRouterArgs["?query"].sortField = oSortItem.getKey();
 					this._oRouterArgs["?query"].sortDescending = oEvent.getParameter("sortDescending");
-                    delete this._oRouterArgs["?query"].showDialog;
-					oRouter.navTo("employeeOverview", this._oRouterArgs, true /*without history*/);
-					
+					delete this._oRouterArgs["?query"].showDialog;		//else we would see the dialog again
+					oRouter.navTo("employeeOverview",this._oRouterArgs, true /*without history*/);
 				}.bind(this),
-				cancel: function (oEvent){
+				cancel : function (oEvent){
 					delete this._oRouterArgs["?query"].showDialog;
-					oRouter.navTo("employeeOverview", this._oRouterArgs, true /*without history*/);
+					oRouter.navTo("employeeOverview",this._oRouterArgs, true /*without history*/);
 				}.bind(this)
 			});
 
@@ -171,6 +170,17 @@ sap.ui.define([
 			// Note: no input validation is implemented here
 			this._oVSD.setSelectedSortItem(sSortField);
 			this._oVSD.setSortDescending(bSortDescending);
+		},
+		onItemPressed: function (oEvent) {
+			var oItem, oCtx, oRouter;
+			oItem = oEvent.getParameter("listItem");
+			oCtx = oItem.getBindingContext();
+			this.getRouter().navTo("employeeResume",{
+				employeeId : oCtx.getProperty("EmployeeID"),
+				"?query": {
+					tab: "Info"
+				}
+			});
 		}
 
 	});
