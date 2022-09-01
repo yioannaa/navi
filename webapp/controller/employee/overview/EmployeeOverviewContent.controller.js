@@ -46,8 +46,7 @@ sap.ui.define([
 			// sorting via URL hash
 			this._applySorter(oQueryParameter.sortField, oQueryParameter.sortDescending);
 
-			// search/filter via URL hash
-			this._applySearchFilter(this._oRouterArgs["?query"].search);
+			
 		},
 
 		onSortButtonPressed : function () {
